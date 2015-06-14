@@ -1,15 +1,11 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
 
-```{r echo=TRUE}
+
+```r
 #load data set
 data <- read.csv(unz("activity.zip", "activity.csv"))
 
@@ -25,14 +21,14 @@ data$datetime <-
 
 
 data$new_date <- as.Date(data$date, format="%Y-%m-%d")
-
 ```
 
 
 
 ## What is mean total number of steps taken per day?
 
-```{r echo=TRUE}
+
+```r
 sum_steps_by_day <- aggregate(data$steps, by=list(data$new_date), FUN=sum)
 colnames(sum_steps_by_day) <- c("Date", "Steps")
 
@@ -45,16 +41,18 @@ hist(sum_steps_by_day$Steps,
      ,xlab="Steps" 
      ,ylab="Number of Days"
      ,main="Total Number of Steps Taken Each Day")
-
 ```
 
-Mean Steps Taken Each Day: `r sprintf("%.3f", sum_mean)`  
-Median Steps Taken Each Day: `r sprintf("%.3f", sum_median)`
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+Mean Steps Taken Each Day: 10766.189  
+Median Steps Taken Each Day: 10765.000
 
 
 ## What is the average daily activity pattern?
 
-```{r echo=TRUE}
+
+```r
 avg_steps_by_interval <- aggregate(data$steps, by=list(data$interval), FUN=mean, na.rm=TRUE)
 colnames(avg_steps_by_interval) <- c("interval", "steps")
 
@@ -67,14 +65,16 @@ plot(avg_steps_by_interval$interval
      ,xlab="Interval"
      ,ylab="Average Number of Steps"
      ,main="Average Number of Steps By Interval")
-
 ```
 
-The interval that had the most average steps is `r max_interval`
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+The interval that had the most average steps is 835
 
 ## Imputing missing values
 
-```{r echo=TRUE}
+
+```r
 missing_data <- data[is.na(data$steps),]
 missing_values <- nrow(missing_data)
 
@@ -90,16 +90,14 @@ for(i in 1:nrow(new_data))
     new_data[i,]$steps <- avg_steps_by_interval[avg_steps_by_interval$interval == interval,]$steps[1]
   }
 }
-
-
 ```
 
-The total number of missing values is `r missing_values`
+The total number of missing values is 2304
 
 Rows with NA for steps are now set to the average for the associated interval.
 
-```{r echo=TRUE}
 
+```r
 sum_steps_by_day2 <- aggregate(new_data$steps, by=list(new_data$new_date), FUN=sum)
 colnames(sum_steps_by_day2) <- c("Date", "Steps")
 
@@ -112,13 +110,13 @@ hist(sum_steps_by_day2$Steps,
      ,xlab="Steps" 
      ,ylab="Number of Days"
      ,main="Total Number of Steps Taken Each Day")
-
-
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
-Mean Steps Taken Each Day: `r sprintf("%.3f", sum_mean2)`  
-Median Steps Taken Each Day: `r sprintf("%.3f", sum_median2)`
+
+Mean Steps Taken Each Day: 10766.189  
+Median Steps Taken Each Day: 10766.189
 
 The effect of replacing NA values with averaged values is that the mean is more concentrated around the median.
 
@@ -126,7 +124,8 @@ The effect of replacing NA values with averaged values is that the mean is more 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
-```{r echo=TRUE}
+
+```r
 library(chron)
 new_data$isWeekend <- is.weekend(new_data$new_date)
 
@@ -143,8 +142,8 @@ xyplot(avg$x ~ avg$interval | avg$weekend
        ,xlab="Interval"
        ,ylab="Average Number of Steps"
        ,main="Average Number of Steps By Interval")
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 The number of steps increases during non-sleeping hours.
